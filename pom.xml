@@ -12,7 +12,8 @@
     <spring-boot.version>2.1.6.SP3-redhat-00001</spring-boot.version>
     <spring-boot.maven.plugin.version>2.1.4.RELEASE-redhat-00001</spring-boot.maven.plugin.version>
     <spring.k8s.bom.version>1.0.3.RELEASE</spring.k8s.bom.version>
-    <fabric8.maven.plugin.version>4.3.0</fabric8.maven.plugin.version>
+    <jkube.build.strategy>jib</jkube.build.strategy>
+    <jkube.generator.name>docker.io/modernizingjavaappsbook/catalog-spring-boot:${project.version}</jkube.generator.name>
   </properties>
   <repositories>
     <repository>
@@ -93,57 +94,9 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-maven-plugin</artifactId>
-        <version>${fabric8.maven.plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>install</phase>
-            <goals>
-              <goal>resource</goal>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <resources>
-              <labels>
-                  <all>
-                      <property>
-                          <name>app</name>
-                          <value>catalog</value>
-                      </property>
-                      <property>
-                          <name>app.kubernetes.io/instance</name>
-                          <value>catalog</value>
-                      </property>
-                      <property>
-                          <name> app.kubernetes.io/part-of</name>
-                          <value>coolstore</value>
-                      </property>
-                      <property>
-                          <name>app.kubernetes.io/name</name>
-                          <value>java</value>
-                      </property>
-                  </all>
-              </labels>
-          </resources>
-          <enricher>
-            <excludes>
-              <exclude>f8-healthcheck-spring-boot</exclude>
-            </excludes>
-          </enricher>
-          <generator>
-            <includes>
-              <include>spring-boot</include>
-            </includes>
-            <config>
-              <spring-boot>
-                <from>registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.4</from>
-              </spring-boot>
-            </config>
-          </generator>
-        </configuration>
+       <groupId>org.eclipse.jkube</groupId>
+       <artifactId>kubernetes-maven-plugin</artifactId>
+       <version>1.1.1</version>
       </plugin>
     </plugins>
   </build>
