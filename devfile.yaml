@@ -1,0 +1,25 @@
+schemaVersion: 2.1.0
+metadata:
+  name: catalog-spring-boot
+attributes:
+  che-theia.eclipse.org/sidecar-policy: mergeImage
+  metadata-name-field: generateName
+  metadata-name-original-value: catalog-spring-boot
+projects:
+  - git:
+      remotes:
+        origin: 'https://github.com/evanshortiss/catalog-spring-boot.git'
+    name: catalog-spring-boot
+components:
+  - container:
+      env:
+        - name: CHE_DASHBOARD_URL
+          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com'
+        - name: CHE_PLUGIN_REGISTRY_URL
+          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com/plugin-registry/v3'
+        - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
+          value: 'http://plugin-registry.crw.svc:8080/v3'
+      image: 'quay.io/devfile/universal-developer-image:ubi8-38da5c2'
+      memoryLimit: 512M
+      sourceMapping: /projects
+    name: universal-developer-image
