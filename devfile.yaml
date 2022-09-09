@@ -50,10 +50,6 @@ components:
       volumeMounts:
         - name: m2
           path: /home/user/.m2
-        - name: remote-endpoint
-          path: /remote-endpoint
-        - name: plugins
-          path: /plugins
     name: tools
   - name: m2
     volume:
