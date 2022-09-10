@@ -1,29 +1,11 @@
 schemaVersion: 2.1.0
 metadata:
   name: catalog-spring-boot
-attributes:
-  che-theia.eclipse.org/sidecar-policy: mergeImage
-  metadata-name-field: generateName
-  metadata-name-original-value: catalog-spring-boot
-projects:
-  - git:
-      remotes:
-        origin: 'https://github.com/modernizing-java-applications-book/catalog-spring-boot.git'
-    name: catalog-spring-boot
 components:
   - attributes:
-      app.kubernetes.io/name: tools
-      che-theia.eclipse.org/vscode-extensions:
-        - 'https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/7.44-che-assets/java-0.82.0-369.vsix'
-        - 'https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/7.44-che-assets/vscode-java-debug-0.26.0.vsix'
-        - 'https://open-vsx.org/api/vscjava/vscode-java-test/0.28.1/file/vscjava.vscode-java-test-0.28.1.vsix'
       che-theia.eclipse.org/vscode-preferences:
         java.server.launchMode: Standard
     container:
-      args:
-        - sh
-        - '-c'
-        - '${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}'
       endpoints:
         - exposure: none
           name: debug
@@ -33,27 +15,11 @@ components:
           name: 8080-tcp
           protocol: http
           targetPort: 8080
-      env:
-        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
-          value: /remote-endpoint/plugin-remote-endpoint
-        - name: THEIA_PLUGINS
-          value: 'local-dir:///plugins/sidecars/tools'
-        - name: CHE_DASHBOARD_URL
-          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com'
-        - name: CHE_PLUGIN_REGISTRY_URL
-          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com/plugin-registry/v3'
-        - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
-          value: 'http://plugin-registry.crw.svc:8080/v3'
       image: 'quay.io/devfile/universal-developer-image:ubi8-0e189d9'
       memoryLimit: 2Gi
-      sourceMapping: /projects
       volumeMounts:
         - name: m2
           path: /home/user/.m2
-        - name: remote-endpoint
-          path: /remote-endpoint
-        - name: plugins
-          path: /plugins
     name: tools
   - name: m2
     volume:
@@ -61,25 +27,24 @@ components:
 commands:
   - exec:
       commandLine: mvn clean install
+      workingDir: '${PROJECT_SOURCE}'
       component: tools
       group:
         isDefault: true
         kind: build
-      workingDir: '${PROJECT_SOURCE}'
     id: maven-build
   - exec:
       commandLine: java -jar target/*.jar
+      workingDir: '${PROJECT_SOURCE}'
       component: tools
       group:
         isDefault: true
         kind: run
-      workingDir: '${PROJECT_SOURCE}'
     id: run-with-hsqldb
   - exec:
       commandLine: 'java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 target/*.jar'
+      workingDir: '${PROJECT_SOURCE}'
       component: tools
       group:
-        isDefault: true
         kind: run
-      workingDir: '${PROJECT_SOURCE}'
     id: run-debug
