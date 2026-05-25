@@ -1,0 +1,109 @@
+{
+  "sessionId": "mig-20260525-sb2to3",
+  "timestamp": "2026-05-25T00:00:00Z",
+  "migrationType": "framework",
+  "source": "Spring Boot 2.1.6 (Red Hat BOM)",
+  "target": "Spring Boot 3.2.5 (community upstream)",
+  "branch": "migration/spring-boot-3",
+  "stories": [
+    {
+      "id": "STORY-001",
+      "title": "Update pom.xml to Spring Boot 3.2.5",
+      "description": "Replace Red Hat BOM with Spring Boot 3.2.5 parent POM. Update Java source/target to 17. Update Spring Cloud Kubernetes to use 2023.0.x BOM with fabric8 variant. Update maven-compiler-plugin to 3.11.0. Update kubernetes-maven-plugin to 1.16.2. Remove explicit spring-boot-maven-plugin version (inherited from parent). Remove Red Hat artifact repositories.",
+      "rules": ["RULE-001", "RULE-003", "RULE-004", "RULE-005", "RULE-007", "RULE-008"],
+      "files": ["pom.xml"],
+      "priority": "critical",
+      "estimatedEffort": "S",
+      "acceptanceCriteria": [
+        "pom.xml uses spring-boot-starter-parent 3.2.5 as parent",
+        "Java source and target set to 17",
+        "spring-cloud-starter-kubernetes-fabric8-config in dependencies",
+        "Spring Cloud BOM 2023.0.1 in dependencyManagement",
+        "maven-compiler-plugin 3.11.0",
+        "kubernetes-maven-plugin 1.16.2",
+        "No Red Hat BOM or repositories",
+        "mvn compile succeeds"
+      ],
+      "githubLabel": ["migration", "pom", "dependencies"]
+    },
+    {
+      "id": "STORY-002",
+      "title": "Migrate javax.persistence to jakarta.persistence",
+      "description": "Update all Java source files using javax.persistence imports to use jakarta.persistence. Specifically Product.java uses javax.persistence.Entity, javax.persistence.Id, and javax.persistence.Table - all must be updated to jakarta.persistence.*.",
+      "rules": ["RULE-002"],
+      "files": [
+        "src/main/java/com/redhat/cloudnative/catalog/Product.java"
+      ],
+      "priority": "critical",
+      "estimatedEffort": "XS",
+      "acceptanceCriteria": [
+        "No javax.persistence imports remain",
+        "Product.java uses jakarta.persistence.Entity",
+        "Product.java uses jakarta.persistence.Id",
+        "Product.java uses jakarta.persistence.Table",
+        "mvn compile succeeds"
+      ],
+      "githubLabel": ["migration", "jakarta", "jpa"]
+    },
+    {
+      "id": "STORY-003",
+      "title": "Update application configuration for Spring Boot 3 and H2 2.x",
+      "description": "Update application.properties to add Spring Boot 3 actuator endpoint exposure config. Verify H2 URL compatibility with H2 2.x bundled in Spring Boot 3. Add spring.jpa.hibernate.ddl-auto if needed. Ensure Spring Cloud Kubernetes config loading is disabled for local development.",
+      "rules": ["RULE-006", "RULE-009"],
+      "files": ["src/main/resources/application.properties"],
+      "priority": "medium",
+      "estimatedEffort": "XS",
+      "acceptanceCriteria": [
+        "Actuator health endpoint accessible",
+        "management.endpoints.web.exposure.include configured",
+        "H2 datasource URL compatible with H2 2.x",
+        "spring.cloud.kubernetes.enabled=false present or JVM arg retained",
+        "Application starts without errors"
+      ],
+      "githubLabel": ["migration", "configuration", "actuator"]
+    },
+    {
+      "id": "STORY-004",
+      "title": "Refactor CatalogController to use constructor injection",
+      "description": "Replace @Autowired field injection in CatalogController with constructor injection. Remove @Autowired annotation from the ProductRepository field. Add a constructor that accepts ProductRepository as a parameter. This is a best practice recommended for Spring Boot 3 and makes the class easier to test.",
+      "rules": ["RULE-010"],
+      "files": [
+        "src/main/java/com/redhat/cloudnative/catalog/CatalogController.java"
+      ],
+      "priority": "low",
+      "estimatedEffort": "XS",
+      "acceptanceCriteria": [
+        "No @Autowired annotations on fields",
+        "Constructor injection used for ProductRepository",
+        "Field can be final",
+        "mvn compile succeeds",
+        "GET /api/catalog returns product list"
+      ],
+      "githubLabel": ["migration", "refactoring", "best-practices"]
+    },
+    {
+      "id": "STORY-005",
+      "title": "Build verification and smoke test",
+      "description": "Run full Maven build with mvn clean package -DskipTests to verify the complete project compiles and packages correctly. Verify the application starts by running mvn spring-boot:run briefly and checking the /api/catalog and /actuator/health endpoints respond. Document final migration status.",
+      "rules": [],
+      "files": [],
+      "priority": "critical",
+      "estimatedEffort": "S",
+      "acceptanceCriteria": [
+        "mvn clean package -DskipTests succeeds",
+        "Application starts on port 8080",
+        "GET /api/catalog returns 200 with product list",
+        "GET /actuator/health returns 200",
+        "No ERROR messages in startup log"
+      ],
+      "githubLabel": ["migration", "verification", "testing"]
+    }
+  ],
+  "executionOrder": ["STORY-001", "STORY-002", "STORY-003", "STORY-004", "STORY-005"],
+  "totalEstimatedEffort": "M",
+  "qualityGates": {
+    "compile": "mvn compile",
+    "package": "mvn clean package -DskipTests",
+    "startupCheck": "curl -s http://localhost:8080/actuator/health"
+  }
+}

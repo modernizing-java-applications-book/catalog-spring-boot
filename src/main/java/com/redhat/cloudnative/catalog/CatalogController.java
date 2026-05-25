@@ -5,7 +5,6 @@ import java.util.Spliterator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +12,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/catalog") 
+@RequestMapping(value = "/api/catalog")
 public class CatalogController {
 
-    @Autowired 
-    private ProductRepository repository; 
+    private final ProductRepository repository;
+
+    public CatalogController(ProductRepository repository) {
+        this.repository = repository;
+    }
 
     @ResponseBody
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
