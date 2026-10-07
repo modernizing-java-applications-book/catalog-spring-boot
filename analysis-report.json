@@ -1,0 +1,187 @@
+{
+  "sessionId": "mig-20260525-sb2to3",
+  "timestamp": "2026-05-25T00:00:00Z",
+  "project": {
+    "path": "/home/bluesman/git/modernizing-java-applications-book/catalog-spring-boot",
+    "name": "CoolStore Catalog Service",
+    "artifactId": "catalog",
+    "groupId": "com.redhat.cloudnative",
+    "version": "1.0-SNAPSHOT",
+    "buildTool": "maven",
+    "language": "java"
+  },
+  "currentState": {
+    "javaVersion": "11",
+    "springBootVersion": "2.1.6.SP3-redhat-00001",
+    "springBootBom": "me.snowdrop:spring-boot-bom:2.1.6.SP3-redhat-00001",
+    "springCloudKubernetesVersion": "1.0.3.RELEASE",
+    "mavenCompilerPluginVersion": "3.6.1",
+    "springBootMavenPluginVersion": "2.1.4.RELEASE-redhat-00001",
+    "jkubePluginVersion": "1.1.1"
+  },
+  "targetState": {
+    "javaVersion": "17",
+    "springBootVersion": "3.2.5",
+    "springCloudVersion": "2023.0.1",
+    "mavenCompilerPluginVersion": "3.11.0",
+    "jkubePluginVersion": "1.16.2"
+  },
+  "sourceFiles": [
+    {
+      "path": "src/main/java/com/redhat/cloudnative/catalog/CatalogApplication.java",
+      "type": "SpringBootApplication",
+      "antiPatterns": [],
+      "complexity": "low"
+    },
+    {
+      "path": "src/main/java/com/redhat/cloudnative/catalog/CatalogController.java",
+      "type": "RestController",
+      "antiPatterns": [
+        {
+          "id": "RULE-010",
+          "description": "Field injection via @Autowired",
+          "line": 19,
+          "severity": "low"
+        }
+      ],
+      "complexity": "low"
+    },
+    {
+      "path": "src/main/java/com/redhat/cloudnative/catalog/Product.java",
+      "type": "JpaEntity",
+      "antiPatterns": [
+        {
+          "id": "RULE-002",
+          "description": "Uses javax.persistence.Entity",
+          "line": 5,
+          "severity": "critical"
+        },
+        {
+          "id": "RULE-002",
+          "description": "Uses javax.persistence.Id",
+          "line": 6,
+          "severity": "critical"
+        },
+        {
+          "id": "RULE-002",
+          "description": "Uses javax.persistence.Table",
+          "line": 7,
+          "severity": "critical"
+        }
+      ],
+      "complexity": "low"
+    },
+    {
+      "path": "src/main/java/com/redhat/cloudnative/catalog/ProductRepository.java",
+      "type": "SpringDataRepository",
+      "antiPatterns": [],
+      "complexity": "low"
+    }
+  ],
+  "resources": [
+    {
+      "path": "src/main/resources/application.properties",
+      "antiPatterns": [
+        {
+          "id": "RULE-009",
+          "description": "Missing actuator endpoint exposure configuration for Spring Boot 3",
+          "severity": "low"
+        }
+      ]
+    },
+    {
+      "path": "src/main/resources/import.sql",
+      "antiPatterns": []
+    },
+    {
+      "path": "src/main/resources/static/index.html",
+      "antiPatterns": []
+    }
+  ],
+  "dependencies": [
+    {
+      "groupId": "me.snowdrop",
+      "artifactId": "spring-boot-bom",
+      "version": "2.1.6.SP3-redhat-00001",
+      "scope": "import",
+      "antiPattern": "RULE-003",
+      "severity": "critical"
+    },
+    {
+      "groupId": "org.springframework.cloud",
+      "artifactId": "spring-cloud-kubernetes-dependencies",
+      "version": "1.0.3.RELEASE",
+      "scope": "import",
+      "antiPattern": "RULE-005",
+      "severity": "high"
+    },
+    {
+      "groupId": "org.springframework.boot",
+      "artifactId": "spring-boot-starter-web",
+      "managed": true
+    },
+    {
+      "groupId": "org.springframework.boot",
+      "artifactId": "spring-boot-starter-data-jpa",
+      "managed": true
+    },
+    {
+      "groupId": "org.springframework.boot",
+      "artifactId": "spring-boot-starter-actuator",
+      "managed": true
+    },
+    {
+      "groupId": "org.springframework.cloud",
+      "artifactId": "spring-cloud-starter-kubernetes-config",
+      "managed": true,
+      "antiPattern": "RULE-005",
+      "severity": "high"
+    },
+    {
+      "groupId": "com.h2database",
+      "artifactId": "h2",
+      "managed": true,
+      "antiPattern": "RULE-006",
+      "severity": "medium"
+    }
+  ],
+  "plugins": [
+    {
+      "groupId": "org.apache.maven.plugins",
+      "artifactId": "maven-compiler-plugin",
+      "version": "3.6.1",
+      "antiPattern": "RULE-007",
+      "severity": "medium"
+    },
+    {
+      "groupId": "org.springframework.boot",
+      "artifactId": "spring-boot-maven-plugin",
+      "version": "2.1.4.RELEASE-redhat-00001",
+      "antiPattern": "RULE-004",
+      "severity": "critical"
+    },
+    {
+      "groupId": "org.eclipse.jkube",
+      "artifactId": "kubernetes-maven-plugin",
+      "version": "1.1.1",
+      "antiPattern": "RULE-008",
+      "severity": "medium"
+    }
+  ],
+  "summary": {
+    "totalFiles": 4,
+    "totalAntiPatterns": 6,
+    "criticalAntiPatterns": 4,
+    "highAntiPatterns": 1,
+    "mediumAntiPatterns": 1,
+    "lowAntiPatterns": 2,
+    "complexityScore": "low",
+    "estimatedEffort": "small",
+    "migrationRisk": "low",
+    "blockers": [
+      "javax.persistence namespace must be migrated to jakarta.persistence",
+      "Red Hat BOM must be replaced with Spring Boot 3 parent POM",
+      "Spring Boot Maven Plugin version must be updated"
+    ]
+  }
+}
